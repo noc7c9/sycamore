@@ -11,6 +11,8 @@ pub trait SycamoreElement {
 /// MBE for generating elements.
 macro_rules! define_elements {
     (
+        $url:expr;
+        $ns:expr;
         $(
             $(#[$attr:meta])*
             $el:ident {
@@ -23,20 +25,40 @@ macro_rules! define_elements {
     ) => {
         $(
             #[allow(non_camel_case_types)]
-            #[doc = concat!("Build a [`<", stringify!($el), ">`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/", stringify!($el), ") element.")]
+            #[doc = concat!("Build a [`<", stringify!($el), ">`](", stringify!($url), stringify!($el), ") element.")]
             $(#[$attr])*
             pub struct $el;
 
             impl SycamoreElement for $el {
                 const TAG_NAME: &'static str = stringify!($el);
-                const NAME_SPACE: Option<&'static str> = None;
+                const NAME_SPACE: Option<&'static str> = $ns;
             }
         )*
     };
 }
 
+macro_rules! define_html_elements {
+    ($($t:tt)*) => {
+        define_elements!(
+            "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/";
+            None;
+            $($t)*
+        );
+    };
+}
+
+macro_rules! define_svg_elements {
+    ($($t:tt)*) => {
+        define_elements!(
+            "https://developer.mozilla.org/en-US/docs/Web/SVG/Element/";
+            Some("http://www.w3.org/2000/svg");
+            $($t)*
+        );
+    };
+}
+
 // A list of valid HTML5 elements (does not include removed or obsolete elements).
-define_elements! {
+define_html_elements! {
     /// The `<a>` HTML element (or anchor element), with its `href` attribute, creates a hyperlink to web pages, files, email addresses, locations in the same page, or anything else a URL can address.
     ///
     /// Content within each `<a>` should indicate the link's destination. If the `href` attribute is present, pressing the enter key while focused on the `<a>` element will activate it.
@@ -174,7 +196,6 @@ define_elements! {
     sub {},
     summary {},
     sup {},
-    svg {},
     table {},
     tbody {},
     td {},
@@ -193,4 +214,76 @@ define_elements! {
     var {},
     video {},
     wbr {},
+}
+
+define_svg_elements! {
+    animate {},
+    animatemotion {},
+    animatetransform {},
+    circle {},
+    clipPath {},
+    // color-profile {},
+    defs {},
+    desc {},
+    discard {},
+    ellipse {},
+    feblend {},
+    fecolormatrix {},
+    fecomponenttransfer {},
+    fecomposite {},
+    feconvolvematrix {},
+    fediffuselighting {},
+    fedisplacementmap {},
+    fedistantlight {},
+    fedropshadow {},
+    feflood {},
+    fefunca {},
+    fefuncb {},
+    fefuncg {},
+    fefuncr {},
+    fegaussianblur {},
+    feimage {},
+    femerge {},
+    femergenode {},
+    femorphology {},
+    feoffset {},
+    fepointlight {},
+    fesSpecularlighting {},
+    fespotlight {},
+    fetile {},
+    feturbulence {},
+    filter {},
+    foreignobject {},
+    g {},
+    hatch {},
+    hatchpath {},
+    image {},
+    line {},
+    lineargradient {},
+    marker {},
+    mask {},
+    mesh {},
+    meshgradient {},
+    meshpatch {},
+    meshrow {},
+    metadata {},
+    mpath {},
+    path {},
+    pattern {},
+    polygon {},
+    polyline {},
+    radialgradient {},
+    rect {},
+    set {},
+    solidcolor {},
+    stop {},
+    svg {},
+    switch {},
+    symbol {},
+    text {},
+    textpath {},
+    tspan {},
+    unknown {},
+    r#use {},
+    view {},
 }

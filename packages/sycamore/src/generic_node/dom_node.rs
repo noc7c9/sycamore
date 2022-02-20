@@ -145,15 +145,15 @@ fn document() -> web_sys::Document {
 impl GenericNode for DomNode {
     type EventType = web_sys::Event;
 
-    fn element(tag: &str) -> Self {
-        let node = document()
-            .create_element(intern(tag))
-            .unwrap_throw()
-            .dyn_into()
-            .unwrap_throw();
+    fn element(tag: &str, namespace: Option<&str>) -> Self {
+        let node = if namespace.is_some() {
+            document().create_element_ns(namespace, intern(tag))
+        } else {
+            document().create_element(intern(tag))
+        };
         DomNode {
             id: Default::default(),
-            node,
+            node: node.unwrap_throw().dyn_into().unwrap_throw(),
         }
     }
 
@@ -196,7 +196,7 @@ impl GenericNode for DomNode {
     }
 
     fn set_class_name(&self, value: &str) {
-        self.node.unchecked_ref::<Element>().set_class_name(value);
+        self.set_attribute("class", value);
     }
 
     fn add_class(&self, class: &str) {

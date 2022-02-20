@@ -53,7 +53,7 @@ pub trait GenericNode: fmt::Debug + Clone + PartialEq + Eq + Hash + 'static {
     const CLIENT_SIDE_HYDRATION: bool = false;
 
     /// Create a new element node.
-    fn element(tag: &str) -> Self;
+    fn element(tag: &str, namespace: Option<&str>) -> Self;
 
     /// Create a new text node.
     fn text_node(text: &str) -> Self;
